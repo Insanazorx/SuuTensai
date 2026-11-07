@@ -1,0 +1,6 @@
+{
+  "Theorem": { "prefix": "theorem", "body": ["theorem ${1:name}<A: Type>(x: A) -> A {", "    return ${0:x}", "}"] },
+  "Definition": { "prefix": "def", "body": ["def ${1:name}<A: Type>(x: A) -> A {", "    ${0:x}", "}"] },
+  "Inductive type": { "prefix": "inductive", "body": ["inductive ${1:Nat}: Type {", "    ${2:zero}: ${1:Nat};", "    ${3:succ}: ${1:Nat} -> ${1:Nat};", "}"] },
+  "Import fundamentals": { "prefix": "fundamentals", "body": "import \"Fundamentals.rigor\";" }
+}

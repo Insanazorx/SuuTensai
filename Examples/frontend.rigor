@@ -1,0 +1,31 @@
+/* Comments may nest: /* inner comment */ still in the outer comment. */
+Gamma Base {
+    A: Type;
+    x: A;
+    P: A -> Prop
+}
+
+axiom refl<A: Type>(x: A) -> Eq<A>(x, x);
+
+def identity<A: Type>(x: A) -> A {
+    x
+}
+
+theorem useIdentity<A: Type>(x: A) -> A {
+    let y: A = identity<A>(x)
+    return y
+}
+
+theorem makeIdentity<A: Type>() -> A -> A {
+    fun (x: A) => {
+        return x;
+    }
+}
+
+theorem dependent<A: Type>(f: (x: A) -> P(x), x: A) -> P(x) {
+    return f(x)
+}
+
+theorem nestedTypes<A: Type>(x: F<G<A>>) -> F<G<A>> {
+    return identity<F<G<A>>>(x)
+}

@@ -1,0 +1,39 @@
+// AST mode keeps this as syntax; --check loads and checks the imported file.
+import "fundamentals-syntax.rigor";
+
+theorem consume<A: Type, B: Type, C: Type>(
+    value: Either<A, B>,
+    fromA: A -> C,
+    fromB: B -> C
+) -> C {
+    return match value {
+        left(a) => fromA(a);
+        right(b) => fromB(b);
+    }
+}
+
+def predecessor(n: Nat) -> Nat {
+    return match n return fun (value: Nat) => Nat {
+        zero => zero;
+        succ(k) => k;
+    }
+}
+
+theorem absurd<A: Type>(impossible: Empty) -> A {
+    return match impossible return fun (value: Empty) => A {}
+}
+
+// Recursors use ordinary calls. The kernel generates NatInd from Nat.
+def double(n: Nat) -> Nat {
+    return NatInd(
+        fun (value: Nat) => Nat,
+        zero,
+        fun (k: Nat, ih: Nat) => succ(succ(ih)),
+        n
+    )
+}
+
+// Explicit universe levels are AST values, not calls to a Type function.
+def smallUniverse() -> Type(1) {
+    Type(0)
+}

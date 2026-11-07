@@ -1,0 +1,67 @@
+// Buradaki isimlerin kernel'de özel anlamı yok. Her inductive için genel
+// doğrulama kuralı çalışır; örn. Id yazınca diğer aileler gibi IdInd üretilir.
+inductive Empty: Type {}
+
+inductive Nat: Type {
+    zero: Nat;
+    succ: Nat -> Nat;
+}
+
+inductive Either<A: Type, B: Type>: Type {
+    left: A -> Either<A, B>;
+    right: B -> Either<A, B>;
+}
+
+inductive List<A: Type>: Type {
+    nil: List<A>;
+    cons: (head: A, tail: List<A>) -> List<A>;
+}
+
+inductive Sigma<A: Type, B: A -> Type>: Type {
+    pack: (value: A, proof: B(value)) -> Sigma<A, B>;
+}
+
+// x ve y değişen indekslerdir. refl yalnızca aynı iki uç için kanıt üretir.
+inductive Id<A: Type>(x: A, y: A): Type {
+    refl: (value: A) -> Id<A>(value, value);
+}
+
+// J: her eşitlik kanıtı için P'yi elde etmek, refl durumunu çözmeye indirgenir.
+// IdInd'in tam argüman sırası: A, motive, refl dalı, x, y, proof.
+def J<A: Type>(
+    P: (x: A, y: A, proof: Id<A>(x, y)) -> Type,
+    base: (value: A) -> P(value, value, refl<A>(value)),
+    x: A, y: A, proof: Id<A>(x, y)
+) -> P(x, y, proof) {
+    IdInd<A>(P, base, x, y, proof)
+}
+
+// F(x) tipindeki değeri x=y kanıtıyla F(y)'ye taşırız.
+// Motive bir F(a)->F(b) fonksiyon tipi: refl durumunda kimlik fonksiyonu yeterli.
+def transport<A: Type>(
+    F: A -> Type, x: A, y: A, proof: Id<A>(x, y), value: F(x)
+) -> F(y) {
+    J<A>(
+        func (a: A, b: A, p: Id<A>(a, b)) => F(a) -> F(b),
+        func (a: A, v: F(a)) => v,
+        x, y, proof
+    )(value)
+}
+
+// Bir fonksiyon eşit girdileri eşit çıktılara götürür.
+theorem congruence<A: Type, B: Type>(
+    f: A -> B, x: A, y: A, proof: Id<A>(x, y)
+) -> Id<B>(f(x), f(y)) {
+    J<A>(
+        func (a: A, b: A, p: Id<A>(a, b)) => Id<B>(f(a), f(b)),
+        func (a: A) => refl<B>(f(a)),
+        x, y, proof
+    )
+}
+
+// Aynı genel eliminasyonu açık match/motive ile de yazabiliriz.
+theorem equalitySymmetry<A: Type>(x: A, y: A, proof: Id<A>(x, y)) -> Id<A>(y, x) {
+    match proof return func (a: A, b: A, p: Id<A>(a, b)) => Id<A>(b, a) {
+        refl(value) => refl<A>(value);
+    }
+}

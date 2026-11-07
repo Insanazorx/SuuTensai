@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Rigor", "scopeName": "source.rigor",
+  "patterns": [
+    { "include": "#comments" }, { "include": "#strings" },
+    { "name": "meta.declaration.rigor", "match": "(?<![\\p{XID_Continue}])\\b(theorem|def|axiom)\\s+([_\\p{XID_Start}][_\\p{XID_Continue}]*)", "captures": { "1": { "name": "keyword.declaration.rigor" }, "2": { "name": "entity.name.function.rigor" } } },
+    { "name": "meta.declaration.type.rigor", "match": "(?<![\\p{XID_Continue}])\\b(inductive|Gamma)\\s+([_\\p{XID_Start}][_\\p{XID_Continue}]*)", "captures": { "1": { "name": "keyword.declaration.rigor" }, "2": { "name": "entity.name.type.rigor" } } },
+    { "name": "meta.binding.rigor", "match": "(?<![_\\p{XID_Continue}])(let)\\s+([_\\p{XID_Start}][_\\p{XID_Continue}]*)", "captures": { "1": { "name": "storage.type.rigor" }, "2": { "name": "variable.other.constant.rigor" } } },
+    { "name": "keyword.control.rigor", "match": "(?<![_\\p{XID_Continue}])(?:theorem|def|axiom|Gamma|inductive|match|import|let|return|fun|func)(?![_\\p{XID_Continue}])" },
+    { "name": "support.type.rigor", "match": "(?<![_\\p{XID_Continue}])(?:Type|Prop)(?![_\\p{XID_Continue}])" },
+    { "name": "constant.language.hole.rigor", "match": "(?<![_\\p{XID_Continue}])_(?![_\\p{XID_Continue}])" },
+    { "name": "entity.name.function.rigor", "match": "(?<![_\\p{XID_Continue}])[_\\p{XID_Start}][_\\p{XID_Continue}]*(?=\\s*[<(])" },
+    { "name": "variable.parameter.rigor", "match": "(?<![_\\p{XID_Continue}])[_\\p{XID_Start}][_\\p{XID_Continue}]*(?=\\s*:)" },
+    { "name": "support.type.rigor", "match": "(?<![_\\p{XID_Continue}])\\p{Lu}[_\\p{XID_Continue}]*" },
+    { "name": "constant.numeric.integer.rigor", "match": "(?<![_\\p{XID_Continue}])[0-9]+(?![_\\p{XID_Continue}])" },
+    { "name": "keyword.operator.rigor", "match": "->|=>|==|!=|&&|\\|\\||[+*/%^=!-]" },
+    { "name": "punctuation.section.rigor", "match": "[{}()<>]" },
+    { "name": "punctuation.separator.rigor", "match": "[,:;]" }
+  ],
+  "repository": {
+    "comments": { "patterns": [
+      { "name": "comment.line.double-slash.rigor", "begin": "//", "end": "$" },
+      { "name": "comment.block.rigor", "begin": "/\\*", "end": "\\*/", "patterns": [{ "include": "#comments-block" }] }
+    ] },
+    "comments-block": { "name": "comment.block.rigor", "begin": "/\\*", "end": "\\*/", "patterns": [{ "include": "#comments-block" }] },
+    "strings": { "name": "string.quoted.double.rigor", "begin": "\"", "end": "\"|(?=$)", "patterns": [
+      { "name": "constant.character.escape.rigor", "match": "\\\\(?:[\"\\\\nrt0]|u\\{[0-9a-fA-F]{1,6}\\})" },
+      { "name": "invalid.illegal.escape.rigor", "match": "\\\\." }
+    ] }
+  }
+}

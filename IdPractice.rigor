@@ -1,0 +1,45 @@
+import "Fundamentals.rigor";
+
+// Önce bu fonksiyonu oku. Üç ayrı argüman var:
+// x ve y: karşılaştırılan sayılar.
+// proof: bu iki sayının eşitliğinin kanıtı.
+// Match'in açtığı değer proof'tur.
+def commonNumber(x: Nat, y: Nat, proof: Id<Nat>(x, y)) -> Nat {
+    return match proof {
+        // Constructor imzası: refl(t) : Id<Nat>(t, t).
+        // Tek constructor alanı t; iki sonuç indeksi de aynı t.
+        // Çıktımız sıradan Nat olduğu için burada açık motive gerekmiyor.
+        refl(t) => t;
+    }
+}
+
+def example() -> Nat {
+    // Nat literal'i kullanmıyoruz: succ(zero) sayısı 1'i temsil eder.
+    let x: Nat = succ(zero);
+
+    // İkinci bir ad verdik; y de aynı 1 değerini temsil ediyor.
+    let y: Nat = x;
+
+    // Proof'un değeri refl(1), tipi Id<Nat>(1, 1).
+    // refl'in içerisine x koyduk; constructor sonuçtaki iki indeksi de x yapar.
+    let proof: Id<Nat>(x, y) = refl<Nat>(x);
+
+    // Hesaplama adımları:
+    // commonNumber(1, 1, refl(1))
+    // -> match refl(1) { refl(t) => t }
+    // -> t yerine 1 koy
+    // -> 1
+    return commonNumber(x, y, proof)
+}
+
+// Kernel bu teoremle example() sonucunun gerçekten 1'e indiğini kontrol eder.
+theorem exampleReturnsOne() -> Id<Nat>(example(), succ(zero)) {
+    refl<Nat>(succ(zero))
+}
+
+// SEN DENE:
+// 1. proof satırında refl<Nat>(x) yerine refl<Nat>(y) yaz.
+//    t hangi değer olacak? Dosyayı çalıştırıp geçip geçmediğini kontrol et.
+// 2. Sonra SADECE `let y: Nat = x;` satırını `let y: Nat = zero;` yap.
+//    Bu sefer proof satırı neden hata veriyor? Oluşturmak istediğin Id tipini
+//    ve refl'in gerçekte ürettiği Id tipini ayrı ayrı yaz.

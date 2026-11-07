@@ -1,0 +1,37 @@
+inductive Id<A: Type>(x: A, y: A): Type {
+    refl: (value: A) -> Id<A>(value, value);
+}
+
+def J<A: Type>(
+    P: (x: A, y: A, proof: Id<A>(x, y)) -> Type,
+    base: (value: A) -> P(value, value, refl<A>(value)),
+    x: A, y: A, proof: Id<A>(x, y)
+) -> P(x, y, proof) {
+    IdInd<A>(P, base, x, y, proof)
+}
+
+// F(x) tipindeki değeri x=y kanıtıyla F(y)'ye taşırız.
+// Motive bir F(a)->F(b) fonksiyon tipi: refl durumunda kimlik fonksiyonu yeterli.
+def transport<A: Type>(
+    F: A -> Type, x: A, y: A, proof: Id<A>(x, y), value: F(x)
+) -> F(y) {
+    J<A>(
+        func (a: A, b: A, p: Id<A>(a, b)) => F(a) -> F(b),
+        func (a: A, v: F(a)) => v,
+        x, y, proof
+    )(value)
+}
+
+
+theorem equalityTransitivity<A: Type>(
+    x: A, y: A, z: A,
+    first: Id<A>(x, y),
+    second: Id<A>(y, z)
+) -> Id<A>(x, z) {
+    let F: A -> Type = func (arg: A) => Id<A>(x,arg)
+    let ResultCreator: F(y) -> F(z) 
+
+
+    
+}
+

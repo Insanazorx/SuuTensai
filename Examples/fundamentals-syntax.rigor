@@ -1,0 +1,26 @@
+// Frontend examples. With --check the kernel validates these declarations and
+// generates their recursors; the parser does neither.
+inductive Empty: Type {}
+
+inductive Nat: Type(0) {
+    zero: Nat;
+    succ: Nat -> Nat;
+}
+
+inductive Either<A: Type, B: Type>: Type {
+    left: A -> Either<A, B>;
+    right: B -> Either<A, B>;
+}
+
+inductive List<A: Type>: Type {
+    nil: List<A>;
+    cons: (head: A, tail: List<A>) -> List<A>;
+}
+
+inductive Sigma<A: Type, B: A -> Type>: Type {
+    pack: (value: A, proof: B(value)) -> Sigma<A, B>;
+}
+
+inductive Id<A: Type>(x: A, y: A): Type {
+    refl: (value: A) -> Id<A>(value, value);
+}

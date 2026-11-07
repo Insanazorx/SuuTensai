@@ -1,0 +1,45 @@
+import "../Fundamentals.rigor";
+
+// Sıradan eliminasyon: bir kanıtın hangi constructor ile üretildiğini kullan.
+theorem eitherSwap<A: Type, B: Type>(proof: Either<A, B>) -> Either<B, A> {
+    return match proof return func (value: Either<A, B>) => Either<B, A> {
+        left(a) => right<B, A>(a);
+        right(b) => left<B, A>(b);
+    }
+}
+
+// Empty'nin hiç constructor'ı yok; dolayısıyla çözülecek dal da yok.
+theorem absurd<A: Type>(proof: Empty) -> A {
+    match proof {}
+}
+
+// Kendi kendini çağırmak yerine sonlanması yapısal olarak güvenli recursor.
+def add(n: Nat, m: Nat) -> Nat {
+    NatInd(
+        func (value: Nat) => Nat,
+        m,
+        func (k: Nat, ih: Nat) => succ(ih),
+        n
+    )
+}
+
+// add(zero,n) tanım gereği n'ye iner; yalnızca refl yeterli.
+theorem addZeroLeft(n: Nat) -> Id<Nat>(add(zero, n), n) {
+    refl<Nat>(n)
+}
+
+// add(n,zero) ise n bilinmediğinde indirgenmez; induction hypothesis gerekir.
+theorem addZeroRight(n: Nat) -> Id<Nat>(add(n, zero), n) {
+    NatInd(
+        func (k: Nat) => Id<Nat>(add(k, zero), k),
+        refl<Nat>(zero),
+        func (k: Nat, ih: Id<Nat>(add(k, zero), k)) =>
+            congruence<Nat, Nat>(succ, add(k, zero), k, ih),
+        n
+    )
+}
+
+// Hesaplama kontrolü: normalizasyon 1+1 sonucunu succ(succ(zero)) yapar.
+theorem onePlusOne() -> Id<Nat>(add(succ(zero), succ(zero)), succ(succ(zero))) {
+    refl<Nat>(succ(succ(zero)))
+}

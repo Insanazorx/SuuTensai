@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Rigor: Build Debug CLI", "type": "process", "command": "bash",
+      "args": ["${workspaceFolder}/Scripts/build.sh", "debug"],
+      "options": { "cwd": "${workspaceFolder}" }, "problemMatcher": [],
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "Rigor: Build Release CLI", "type": "process", "command": "bash",
+      "args": ["${workspaceFolder}/Scripts/build.sh", "release"],
+      "options": { "cwd": "${workspaceFolder}" }, "problemMatcher": []
+    },
+    {
+      "label": "Rigor: Check Current File", "type": "process",
+      "command": "${workspaceFolder}/.build/debug/SuuTensai", "args": ["--check", "${file}"],
+      "dependsOn": "Rigor: Build Debug CLI", "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": {
+        "owner": "rigor-task", "fileLocation": "absolute",
+        "pattern": { "regexp": "^(.+):([0-9]+):([0-9]+): (?:lexer|parser|kernel): (.+)$", "file": 1, "line": 2, "column": 3, "message": 4 }
+      }
+    }
+  ]
+}

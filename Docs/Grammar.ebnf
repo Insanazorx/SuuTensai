@@ -1,0 +1,74 @@
+(* Syntax only. Whitespace and comments are removed by the lexer. *)
+program        = { declaration }, EOF ;
+declaration    = ("theorem" | "def"), signature, block, [ ";" ]
+               | "axiom", signature, terminator
+               | "import", string, terminator
+               | inductive-declaration
+               | "Gamma", identifier, "{", { parameter, terminator }, "}", [ ";" ] ;
+inductive-declaration = "inductive", identifier, [ generics ], [ parameters ],
+                        ":", expression, "{", { constructor }, "}", [ ";" ] ;
+constructor    = identifier, ":", expression, terminator ;
+signature      = identifier, [ generics ], parameters, "->", expression ;
+generics       = "<", parameter, { ",", parameter }, [ "," ], ">" ;
+parameters     = "(", [ parameter, { ",", parameter }, [ "," ] ], ")" ;
+parameter      = binder, ":", expression ;
+binder         = identifier | "_" ;
+
+block          = "{", { statement }, [ expression ], "}" ;
+statement      = "let", binder, [ ":", expression ], "=", expression, terminator
+               | "return", expression, terminator
+               | expression, expression-terminator
+               | ";" ;
+
+(* Newline terminators are allowed only when parsing the expression has ended.
+   Calls, generic applications, and infix operators continue across newlines.
+   A final expression before '}' without ';' is a block result.
+   '}' and EOF are not consumed by terminator. *)
+terminator     = ";" | line-break-before-next-token | before-right-brace | before-EOF ;
+expression-terminator = ";" | line-break-before-next-token ;
+
+expression     = arrow ;
+arrow          = disjunction, [ "->", arrow ] ;
+disjunction    = conjunction, { "||", conjunction } ;
+conjunction    = equality, { "&&", equality } ;
+equality       = addition, { ("==" | "!="), addition } ;
+addition       = multiplication, { ("+" | "-"), multiplication } ;
+multiplication = unary, { ("*" | "/" | "%"), unary } ;
+unary          = ("!" | "-" | "+"), unary | power ;
+power          = postfix, [ "^", unary ] ;
+postfix        = primary, { call | specialization } ;
+call           = "(", [ expression, { ",", expression }, [ "," ] ], ")" ;
+specialization = "<", expression, { ",", expression }, [ "," ], ">" ;
+primary        = identifier | number | string | universe | "Prop" | "_"
+               | "(", expression, ")"
+               | nonempty-parameters, "->", expression
+               | ("fun" | "func"), parameters, "=>", expression
+               | block | match-expression ;
+universe       = "Type", [ "(", number, ")" ] ;
+match-expression = "match", expression, [ "return", expression ],
+                   "{", { match-branch }, "}" ;
+match-branch   = pattern, "=>", expression, branch-terminator ;
+branch-terminator = "," | terminator ;
+pattern        = "_" | identifier, [ "(", [ pattern, { ",", pattern }, [ "," ] ], ")" ] ;
+nonempty-parameters = "(", parameter, { ",", parameter }, [ "," ], ")" ;
+
+(* Parentheses followed by binder ':' select dependent-function syntax.
+   A parenthesized annotation such as '(x: A)' must therefore have '-> result'.
+   '<' and '>' are generic delimiters, never comparison/shift operators.
+   number = one or more ASCII decimal digits (preserved as a string).
+   identifier = '_' or Unicode XID_Start, followed by XID_Continue scalars;
+                the exact spelling '_' is reserved as a hole/wildcard.
+   string = double-quoted text, decoded escapes; see README.
+   Comments: // through newline, and nested block comments.
+   Keyword spellings are reserved, case-sensitive whole identifiers. *)
+
+(* Universes: Type means Type(0). Explicit levels are nonnegative integer
+   literals representable by Swift Int; expressions and symbolic levels are
+   not part of this first version.
+   Inductive generic parameters in <...> are uniform; parameters in (...)
+   are varying indices. No validity/positivity/universe checks run here.
+   Patterns: bare names are unresolved until symbol resolution; name(...)
+   explicitly selects constructor syntax. Empty matches support Empty-like
+   elimination; coverage and motive checking belong to the kernel.
+   Imports store a decoded path and never load another file during parsing.
+   Recursors are ordinary identifiers/applications, not reserved keywords. *)

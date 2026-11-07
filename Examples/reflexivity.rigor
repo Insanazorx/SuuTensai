@@ -1,0 +1,4 @@
+// Proof validity will be decided by your kernel.
+theorem reflexivity<A: Type>(x: A) -> A {
+    return x
+}

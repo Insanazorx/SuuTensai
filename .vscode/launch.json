@@ -1,0 +1,52 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [
+                "--check",
+                "${workspaceFolder}/${input:rigorScript}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "name": "Check Rigor (kernel)",
+            "program": "${workspaceFolder}/.build/debug/SuuTensai",
+            "configuration": "debug",
+            "preLaunchTask": "Rigor: Build Debug CLI"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [
+                "--check",
+                "${workspaceFolder}/${input:rigorScript}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "name": "Debug SuuTensai",
+            "program": "${workspaceFolder}/.build/debug/SuuTensai",
+            "configuration": "debug",
+            "preLaunchTask": "Rigor: Build Debug CLI"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [
+                "--check",
+                "${workspaceFolder}/${input:rigorScript}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "name": "Release SuuTensai",
+            "program": "${workspaceFolder}/.build/release/SuuTensai",
+            "configuration": "release",
+            "preLaunchTask": "Rigor: Build Release CLI"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "rigorScript",
+            "type": "promptString",
+            "description": "Proje kökündeki .rigor dosyasının adı (uzantısıyla)",
+            "default": "main.rigor"
+        }
+    ]
+}

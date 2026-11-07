@@ -1,0 +1,48 @@
+{
+  "name": "rigor-language",
+  "displayName": "Rigor Language",
+  "description": "Syntax highlighting and live type/proof diagnostics for Rigor.",
+  "version": "0.3.0",
+  "publisher": "suutensai",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Programming Languages", "Linters"],
+  "main": "./extension.js",
+  "activationEvents": ["onLanguage:rigor"],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Syntax highlighting works everywhere; the local checker runs only in trusted workspaces.",
+      "restrictedConfigurations": ["rigor.checkerPath", "rigor.swiftPath"]
+    },
+    "virtualWorkspaces": { "supported": false }
+  },
+  "contributes": {
+    "languages": [{
+      "id": "rigor", "aliases": ["Rigor", "rigor"], "extensions": [".rigor"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{ "language": "rigor", "scopeName": "source.rigor", "path": "./syntaxes/rigor.tmLanguage.json", "balancedBracketScopes": ["punctuation.section.rigor"], "unbalancedBracketScopes": ["keyword.operator.rigor"] }],
+    "snippets": [{ "language": "rigor", "path": "./snippets/rigor.json" }],
+    "configurationDefaults": { "[rigor]": { "editor.tabSize": 4, "editor.insertSpaces": true } },
+    "commands": [
+      { "command": "rigor.check", "title": "Rigor: Check Current File" },
+      { "command": "rigor.buildChecker", "title": "Rigor: Build Checker" },
+      { "command": "rigor.showOutput", "title": "Rigor: Show Checker Output" },
+      { "command": "rigor.restartServer", "title": "Rigor: Restart Language Server" },
+      { "command": "rigor.showInfo", "title": "Rigor: Show Check Details", "icon": "$(checklist)" }
+    ],
+    "menus": { "editor/title": [{ "command": "rigor.showInfo", "when": "editorLangId == rigor", "group": "navigation" }] },
+    "configuration": {
+      "title": "Rigor",
+      "properties": {
+        "rigor.info.autoOpen": { "type": "boolean", "scope": "resource", "default": true, "description": "Open the live Rigor result beside the source editor automatically." },
+        "rigor.lint.enabled": { "type": "boolean", "scope": "resource", "default": true, "description": "Check Rigor files while editing, including unsaved changes." },
+        "rigor.lint.delay": { "type": "number", "scope": "resource", "default": 0, "minimum": 0, "maximum": 5000, "description": "Delay before sending changes to the persistent language server. Zero checks every edit immediately." },
+        "rigor.checkerPath": { "type": "string", "default": "", "scope": "resource", "description": "Path to the SuuTensai executable. Empty uses .build/debug/SuuTensai in the workspace. Supports ${workspaceFolder}." },
+        "rigor.swiftPath": { "type": "string", "scope": "resource", "default": "swift", "description": "Swift executable used to build the checker." },
+        "rigor.autoBuild": { "type": "boolean", "scope": "resource", "default": true, "description": "Build the checker if the executable is missing." }
+      }
+    }
+  },
+  "scripts": { "test": "node --test test/*.test.js" }
+}
